@@ -13,10 +13,10 @@
   		}
   		header ul {
   			list-style: none;
-    		padding: 0;
-  		}
-  		header ul li {
-  			text-align: center;
+		    padding: 0;
+		    display: flex;
+		    flex-flow: row wrap;
+		    justify-content: flex-end;
   		}
   		a {
   			color: white;
@@ -25,9 +25,11 @@
   		}
 		.tweet-stream {
 		    padding: 0;
+		    margin-right: 5px;
+		    border-radius: 2px;
 		    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 		    list-style: none;
-		    width: 45%;
+		    width: 40%;
 		    height: 400px;
 		    overflow-y: auto;
 		    font-family: sans-serif;
@@ -59,10 +61,13 @@
 		a.tweet-time {
 		    float: right;
 		    line-height: 40px;
+		    color: black;
 		}
 
 		ul.story-list {
 		    padding: 0;
+		    margin-left: 5px;
+		    border-radius: 2px;
 		    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 		    list-style: none;
 		    width: 40%;
@@ -110,6 +115,17 @@
 			display: flex;
 		    justify-content: center;
 		    width: 100%;
+		}
+
+		input {
+		    border-radius: 10px;
+		}
+		form.enterForm {
+		    padding-right: 10px;
+		}
+		.home {
+		    flex: 2 2px;
+		    padding-left: 10px;
 		}
   	</style>
   </head>
