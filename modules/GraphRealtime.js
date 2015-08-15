@@ -60,8 +60,10 @@ var GraphRealtime = React.createClass({
 		//calculateData(this.props.sentiment_value);
 		var w = window.innerWidth;
 		return(
-			<canvas id="graph-realtime" height="400" width={w} ref="graph">
-			</canvas>
+			<div id="graph-realtime-container" className="hidden" style={{height: "320px", overflow: "hidden"}}>
+				<canvas id="graph-realtime" height="320" width={w} ref="graph">
+				</canvas>
+			</div>
 		);
 	}
 });

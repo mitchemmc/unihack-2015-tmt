@@ -4,6 +4,8 @@ var socket = io('http://localhost:3000');
 var TweetStream = require('./TweetStream');
 var StoryList = require('./StoryList');
 var GraphRealtime = require('./GraphRealtime');
+var GraphHistoric = require('./GraphHistoric');
+var Button = require('./Button');
 var $ = require('jquery');
 
 var Search = React.createClass({
@@ -59,24 +61,47 @@ var Search = React.createClass({
     socket.on('analysis', function(data){
       console.log("sentiment: ");
       console.log(data);
-      self.setState({aggregate: data.aggregate})
+      var sentiment_queue_times = [];
+      var sentiment_queue_scores = [];
+      data.sentiment_queue.forEach(function(element){
+        sentiment_queue_times.push(element.time);
+        sentiment_queue_scores.push(element.aggregate);
+      });
+      self.setState({aggregate: data.aggregate, sentiment_queue_times: sentiment_queue_times, sentiment_queue_scores: sentiment_queue_scores})
     })
   },
   getInitialState: function() {
-    return {key: [], tweets: [], stories: [], aggregate: 0};
+    return {key: [], tweets: [], stories: [], aggregate: 0, sentiment_queue_times: [], sentiment_queue_scores: [], graph_switch_state: "Historic"};
   },
   //        <div>Search: {this.props.params.key}</div>
+//          <GraphRealtime aggregate={this.state.aggregate}/>
+  _handleGraphSwitchClick: function(){
+    if(this.state.graph_switch_state == "Historic")
+    {
+      this.setState({graph_switch_state: "Realtime"});
+      document.querySelector('#historic-chart').className = "c3";
+      document.querySelector('#graph-realtime-container').className = "hidden";
+    }
+    else
+    {
+      this.setState({graph_switch_state: "Historic"});
+      document.querySelector('#historic-chart').className = "c3 hidden";
+      document.querySelector('#graph-realtime-container').className = "";
+    }
+  },
 
   render: function() {
     return (
 
       <div className="layout">
-        <div className="layout-collumn">
+        <div className="layout-collumn layout">
           <TweetStream tweets={this.state.tweets}/>
           <StoryList stories={this.state.stories}/>
         </div>
         <div className="layout-row">
-          <GraphRealtime aggregate={this.state.aggregate}/>
+          <Button class="graph-real-hist" click={this._handleGraphSwitchClick} text={this.state.graph_switch_state} />
+          <GraphHistoric times={this.state.sentiment_queue_times} values={this.state.sentiment_queue_scores} ref="graphHistoric"/>
+          <GraphRealtime aggregate={this.state.aggregate} ref="grpahRealtime"/>
         </div>
       </div>
 

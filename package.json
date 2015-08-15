@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/mitchemmc/unihack-2015-tmt#readme",
   "dependencies": {
+    "c3": "^0.4.10",
     "c3-react": "^0.1.13",
+    "d3": "^3.5.6",
     "express": "^4.13.3",
     "install": "^0.1.8",
     "jquery": "^2.1.4",

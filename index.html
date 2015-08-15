@@ -112,9 +112,27 @@
 
 		.layout {
 			margin-top: 50px; 
+			/*display: flex;
+		    justify-content: center;*/
+		    width: 100%;
+		}
+		.layout-collumn {
 			display: flex;
 		    justify-content: center;
-		    width: 100%;
+		}
+
+		.layout-row {
+			width: 80%;
+			margin-right: auto;
+			margin-left: auto;
+			box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+			overflow: hidden;
+
+		}
+
+		.hidden{
+			visibility: hidden;
+			position: absolute !important;
 		}
 
 		input {
@@ -126,6 +144,37 @@
 		.home {
 		    flex: 2 2px;
 		    padding-left: 10px;
+		}
+
+		.c3-ygrid-line.grid_neutral line {
+		    stroke: light grey;
+		    stroke-dasharray: 5,5;
+		    z-index: -1;
+		}
+
+		.c3-ygrid-line.grid_neutral text {
+		    fill: light grey;
+		}
+
+		.c3-ygrid-line.grid_positive text {
+		    fill: green;
+		}
+		.c3-ygrid-line.grid_negative text {
+		    fill: red;
+		}
+
+		.c3-ygrid-line.grid_positive line {
+		    stroke: green;
+		}
+
+		.c3-ygrid-line.grid_negative line {
+		    stroke: red;
+		}
+		#graph-realtime{
+			height: 320px;
+		}
+		canvas{
+			display: block;
 		}
   	</style>
   </head>

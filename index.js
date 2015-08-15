@@ -24,17 +24,6 @@ io.on('connection', function(socket){
   	socket.join(room);
   });
 
-  socket.on('request room data', function(){
-  	socket.subscriptions.forEach(function(sub){
-  		rooms.forEach(function(room){
-  			if(sub == room.room)
-  			{
-  				socket.emit('recieve room data', room.sentiment_queue);
-  			}
-  		});
-  	});
-  });
-
   socket.on('disconnect', function(){
   	console.log('disconnect');
   	console.log(socket.subscriptions);
@@ -180,9 +169,9 @@ setInterval(function(){
 						}
 						var time = formatDate(new Date());
 						rooms[index].sentiment_queue.push({aggregate: action.result.aggregate.score, time: time});
-						rooms[index].sentiment_queue.splice(-180);
+						//rooms[index].sentiment_queue.splice(-180);
 
-						io.to(rooms[index].room).emit('analysis', {aggregate: action.result.aggregate.score, sentiment: influentialSentiment.sentiment, sentiment_score: influentialSentiment.score, room_data: rooms[index].data});
+						io.to(rooms[index].room).emit('analysis', {aggregate: action.result.aggregate.score, sentiment: influentialSentiment.sentiment, sentiment_score: influentialSentiment.score, room_data: rooms[index].data, sentiment_queue: rooms[index].sentiment_queue});
 						console.log(rooms[index].room + " : " + action.result.aggregate.score)
 					}
 				});
