@@ -24,6 +24,17 @@ io.on('connection', function(socket){
   	socket.join(room);
   });
 
+  socket.on('request room data', function(){
+  	socket.subscriptions.forEach(function(sub){
+  		rooms.forEach(function(room){
+  			if(sub == room.room)
+  			{
+  				socket.emit('recieve room data', room.sentiment_queue);
+  			}
+  		});
+  	});
+  });
+
   socket.on('disconnect', function(){
   	console.log('disconnect');
   	console.log(socket.subscriptions);
@@ -101,7 +112,7 @@ function unsubscribe(room){
 }
 
 function addRoom(room){
-	rooms.push({room: room, subscribers: 1, sentiment_string: ""});
+	rooms.push({room: room, subscribers: 1, sentiment_string: "", data:{positive: 0, negative: 0, neutral: 0}, sentiment_queue: []});
 	console.log("adding room: " + room);
 	track(room);
 }
@@ -119,7 +130,7 @@ function incrementSubscribers(room){
 	});
 }
 
-/*setInterval(function(){
+setInterval(function(){
 	if(rooms.length > 0)
 	{
 
@@ -140,13 +151,42 @@ function incrementSubscribers(room){
 			{
 				waitingForRespose = false;
 				data.actions.forEach(function(action, index){
-					io.to(rooms[index].room).emit('analysis', action.result.aggregate.score);
+					var sentiments = [];
+					var influentialSentiment;
+					//increment rooms data
+					action.result.positive.forEach(function(el){
+						rooms[index].data.positive++;
+						sentiments.push({sentiment: el.sentiment, score: el.score});
+					});
+					action.result.negative.forEach(function(el){
+						rooms[index].data.negative++;
+						sentiments.push({sentiment: el.sentiment, score: el.score});
+					});
+					if(action.result.positive.length == 0 && action.result.negative ==0)
+					{
+						rooms[index].data.neutral++;
+						influentialSentiment = {sentiment: "", sentiment_score: 0};
+					}
+					else if (sentiments.length > 0)
+					{
+						influentialSentiment = sentiments.reduce(function(a, b){
+							if(Math.abs(a.score) > Math.abs(b.score))
+								return a;
+							else
+								return b;
+						});
+					}
+					var time = formatDate(new Date());
+					rooms[index].sentiment_queue.push({aggregate: action.result.aggregate.score, time: time});
+					rooms[index].sentiment_queue.splice(-180);
+
+					io.to(rooms[index].room).emit('analysis', {aggregate: action.result.aggregate.score, sentiment: influentialSentiment.sentiment, sentiment_score: influentialSentiment.score, room_data: rooms[index].data});
 					console.log(rooms[index].room + " : " + action.result.aggregate.score)
 				});
 			}
 		});
 	}
-}, 10000);*/
+}, 10000);
 
 function runSentiment(data, callback){
 	waitingForRespose = true;
@@ -168,9 +208,14 @@ function runSentiment(data, callback){
 	        	url: 'http://api.idolondemand.com/1/job/status/' + jobID + "?apikey=" + apikey
 
 	        }, function(e, r, b){
-	        	console.log(b);
-	        	if(!e)
+	        	if (r.statusCode >= 200 && r.statusCode < 400)
+	        	{
 	        		callback(JSON.parse(b));
+	        	}
+	        	 else {
+	        	 	console.log("error: ");
+	        	 	console.log(r);
+	        	}
 	        });
 	    }
 	});
@@ -184,4 +229,8 @@ function updateSentimentText(room, tweet){
 		var parsed = tweet.text.replace(urlReg, "");
 		room.sentiment_string += parsed + " ";
 	}
+}
+
+function formatDate(date_object) {
+	return date_object.getHours() + ":" + date_object.getMinutes() + ":" + date_object.getSeconds();
 }

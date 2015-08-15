@@ -31,6 +31,7 @@
     "bundle-loader": "^0.5.4",
     "css-loader": "^0.16.0",
     "file-loader": "^0.8.4",
+    "fs": "0.0.2",
     "jsx-loader": "^0.13.2",
     "less": "^2.5.1",
     "less-loader": "^2.2.0",

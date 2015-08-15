@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "24b0ac7f16e375013655"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "42aa38c5b1aa55b537c6"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -21058,18 +21058,33 @@
 	    console.log("mount");
 	    this.subscribe(key);
 	    this.setState({key: [this.props.params.key]});
-
+	    var tweetQueue = [];
 	    //Setup tweet stream
 	    socket.on('tweet', function(tweet){
-	      console.log(tweet);
-	      self.setState(function(previousState, currentProps) {
-	        var tweetToAdd = {text: tweet.text, created_at: tweet.created_at, time: "now", img_url: tweet.user.profile_image_url}
-	        return {tweets: [tweetToAdd].concat(previousState.tweets)};
-	      });
+	      //console.log(tweet);
+	      tweetQueue.push(tweet);
+	      
 	    });
 
+	    setInterval(function(){
+	      if(tweetQueue.length > 0)
+	      {
+	        var tweet = tweetQueue.reduce(function(a, b){
+	            if(a.user.followers_count > b.user.followers_count)
+	              return a;
+	            else
+	              return b;
+	          });
+	        self.setState(function(previousState, currentProps) {
+	          var tweetToAdd = {text: tweet.text, created_at: tweet.created_at, time: "now", img_url: tweet.user.profile_image_url}
+	          return {tweets: [tweetToAdd].concat(previousState.tweets)};
+	        });
+	        tweetQueue = [];
+	      }
+	    },2000);
+
 	    //update times every minute
-	   /* setInterval(function(){
+	    setInterval(function(){
 	      self.setState(function(previousState, currentProps) {
 	        var updatedState = previousState.tweets.map(function(t){
 	          var time = pretty(t.created_at);
@@ -21077,12 +21092,13 @@
 	        });
 	        return {tweets: updatedState};
 	      });
-	    }, 60000);*/
+	    }, 60000);
 
 	    getNewsFeed(key, function(stories){self.setState({stories: stories})});
 
-	    socket.on('analysis', function(score){
-	      console.log(score);
+	    socket.on('analysis', function(data){
+	      console.log("sentiment: ");
+	      console.log(data);
 	    })
 	  },
 	  getInitialState: function() {
@@ -28394,7 +28410,7 @@
 
 	var TweetStream = React.createClass({displayName: "TweetStream",
 	  render: function() {
-	  	console.log(this.props.tweets);
+	  	//console.log(this.props.tweets);
 	  	var tweets = this.props.tweets.map(function(tweet, i){
 	  		return React.createElement(Tweet, {text: tweet.text, time: tweet.time, img_url: tweet.img_url, key: i}) 
 	  	});
