@@ -8,7 +8,7 @@ var Twitter = require('node-tweet-stream');
 var rooms = [];
 var waitingForRespose = false;
 
-app.get(/^((?!js).)*$/, function(req, res){
+app.get(/^((?!js|png).)*$/, function(req, res){
   res.sendfile('index.html');
 });
 

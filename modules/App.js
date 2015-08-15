@@ -27,10 +27,10 @@ var App = React.createClass({
       <div>
         <header>
           <ul>
-            <li className="home"><Link to="home">Home</Link></li>
+            <li className="home"><Link to="home"><img className="logo" src="logo.png"/></Link></li>
             <li>
               <form className = "enterForm" onSubmit = {this.search}>
-                <input ref = "input"/>
+                <input ref = "input" placeholder="Search topic"/>
               </form>
             </li>
           </ul>

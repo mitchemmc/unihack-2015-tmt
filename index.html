@@ -9,19 +9,27 @@
   			height: 50px;
   			position: fixed;
   			top: 0;
-  			background-color: rgb(68, 138, 255);
-  		}
+  			background-color: rgb(255, 255, 255);
+		    box-shadow: 0px 2px 3px 0px rgba(50, 50, 50, 0.11);
+		}
   		header ul {
   			list-style: none;
 		    padding: 0;
 		    display: flex;
 		    flex-flow: row wrap;
 		    justify-content: flex-end;
+	        width: 65%;
+		    margin-left: auto;
+		    margin-right: auto;
   		}
   		a {
   			color: white;
 		    text-decoration: none;
 		    font-family: sans-serif;
+  		}
+  		.logo{
+  			width: 100px;
+		    transform: translateY(-7px);
   		}
 		.tweet-stream {
 		    padding: 0;
@@ -29,7 +37,7 @@
 		    border-radius: 2px;
 		    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 		    list-style: none;
-		    width: 40%;
+		    width: 50%;
 		    height: 400px;
 		    overflow-y: auto;
 		    font-family: sans-serif;
@@ -51,7 +59,7 @@
 
 		span.tweet-text {
 		    display: inline-block;
-		    max-width: 80%;
+		    max-width: 65%;
 		    text-overflow: ellipsis;
 		    white-space: nowrap;
 		    overflow: hidden;
@@ -70,7 +78,7 @@
 		    border-radius: 2px;
 		    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 		    list-style: none;
-		    width: 40%;
+		    width: 50%;
 		    height: 400px;
 		    overflow-y: auto;
 		    font-family: sans-serif;
@@ -114,15 +122,17 @@
 			margin-top: 50px; 
 			/*display: flex;
 		    justify-content: center;*/
-		    width: 100%;
 		}
 		.layout-collumn {
 			display: flex;
 		    justify-content: center;
+	        width: 65%;
+		    margin-left: auto;
+		    margin-right: auto;
 		}
 
 		.layout-row {
-			width: 80%;
+			width: 65%;
 			margin-right: auto;
 			margin-left: auto;
 			box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
@@ -134,12 +144,38 @@
 			visibility: hidden;
 			position: absolute !important;
 		}
-
 		input {
-		    border-radius: 10px;
+		    display: block;
+		    margin: 0;
+		    width: 100%;
+		    font-family: "Open Sans", sans-serif;
+		    font-size: 11px;
+		    -webkit-appearance: none;
+		    -moz-appearance: none;
+		    appearance: none;
+		    -webkit-box-shadow: none;
+		    -moz-box-shadow: none;
+		    box-shadow: none;
+		    -webkit-border-radius: none;
+		    -moz-border-radius: none;
+		    -ms-border-radius: none;
+		    -o-border-radius: none;
+		    border-radius: none;
+		    border-bottom: solid 2px #c9c9c9;
+		    -webkit-transition: border 0.3s;
+		    -moz-transition: border 0.3s;
+		    -o-transition: border 0.3s;
+		    transition: border 0.3s;
+		    border: 1px solid rgba(0,0,0,.13);
+		    border-radius: 2px;
+		    font-weight: 200;
+		    padding: 4px;
+		}
+		input:focus {
+			border-bottom: solid 2px rgba(0,0,0,0.37);
+			outline: none;
 		}
 		form.enterForm {
-		    padding-right: 10px;
 		}
 		.home {
 		    flex: 2 2px;
