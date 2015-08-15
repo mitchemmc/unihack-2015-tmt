@@ -19,6 +19,7 @@
   "dependencies": {
     "express": "^4.13.3",
     "install": "^0.1.8",
+    "jquery": "^2.1.4",
     "node-tweet-stream": "^1.8.2",
     "npm": "^2.13.5",
     "react": "*",

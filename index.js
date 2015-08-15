@@ -119,7 +119,7 @@ function incrementSubscribers(room){
 	});
 }
 
-setInterval(function(){
+/*setInterval(function(){
 	if(rooms.length > 0)
 	{
 
@@ -146,7 +146,7 @@ setInterval(function(){
 			}
 		});
 	}
-}, 10000);
+}, 10000);*/
 
 function runSentiment(data, callback){
 	waitingForRespose = true;
