@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "f69d8542a541854617ff"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "88296817e1d9762e8bc1"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -24451,15 +24451,24 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var socket = __webpack_require__(204)('http://localhost:3000');
+	var io = __webpack_require__(204)
+	var socket = io('http://localhost:3000');
 
 	var Search = React.createClass({displayName: "Search",
+	  subscribe: function(to){
+	    socket.emit('subscribe', to);
+	    console.log("subscribing to: " + to);
+	  },
 	  componentDidMount: function () {
-	    // from the path `/inbox/messages/:id`
 	    var key = this.props.params.key;
+	    console.log("mount");
+	    this.subscribe(key);
 	    this.setState({key: [this.props.params.key]});
 	    socket.on('tweet', function(tweet){
 	      console.log(tweet);
+	      setState(function(previousState, currentProps) {
+	        return {tweets: previousState.tweets.concat([tweet])};
+	      });
 	    });
 	  },
 	  getInitialState: function() {
@@ -24467,7 +24476,7 @@
 	  },
 	  render: function() {
 	    return (
-	      React.createElement("div", null, "Search: ", this.props.params.key)
+	      React.createElement("div", null, "Searchasdasda: ", this.props.params.key)
 	    );
 	  }
 	});

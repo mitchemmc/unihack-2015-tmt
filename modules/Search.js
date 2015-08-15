@@ -1,13 +1,22 @@
 var React = require('react');
-var socket = require('socket.io-client')('http://localhost:3000');
+var io = require('socket.io-client')
+var socket = io('http://localhost:3000');
 
 var Search = React.createClass({
+  subscribe: function(to){
+    socket.emit('subscribe', to);
+    console.log("subscribing to: " + to);
+  },
   componentDidMount: function () {
-    // from the path `/inbox/messages/:id`
     var key = this.props.params.key;
+    console.log("mount");
+    this.subscribe(key);
     this.setState({key: [this.props.params.key]});
     socket.on('tweet', function(tweet){
       console.log(tweet);
+      setState(function(previousState, currentProps) {
+        return {tweets: previousState.tweets.concat([tweet])};
+      });
     });
   },
   getInitialState: function() {
@@ -15,7 +24,7 @@ var Search = React.createClass({
   },
   render: function() {
     return (
-      <div>Search: {this.props.params.key}</div>
+      <div>Searchasdasda: {this.props.params.key}</div>
     );
   }
 });
