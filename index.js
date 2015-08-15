@@ -147,42 +147,46 @@ setInterval(function(){
 		});
 
 		runSentiment(sentiment_data, function(data){
+			//console.log(data.actions);
 			if(data)
 			{
-				waitingForRespose = false;
 				data.actions.forEach(function(action, index){
-					var sentiments = [];
-					var influentialSentiment;
-					//increment rooms data
-					action.result.positive.forEach(function(el){
-						rooms[index].data.positive++;
-						sentiments.push({sentiment: el.sentiment, score: el.score});
-					});
-					action.result.negative.forEach(function(el){
-						rooms[index].data.negative++;
-						sentiments.push({sentiment: el.sentiment, score: el.score});
-					});
-					if(action.result.positive.length == 0 && action.result.negative ==0)
-					{
-						rooms[index].data.neutral++;
-						influentialSentiment = {sentiment: "", sentiment_score: 0};
-					}
-					else if (sentiments.length > 0)
-					{
-						influentialSentiment = sentiments.reduce(function(a, b){
-							if(Math.abs(a.score) > Math.abs(b.score))
-								return a;
-							else
-								return b;
+					if(typeof action.result != 'undefined')
+					{	
+						var sentiments = [];
+						var influentialSentiment;
+						//increment rooms data
+						action.result.positive.forEach(function(el){
+							rooms[index].data.positive++;
+							sentiments.push({sentiment: el.sentiment, score: el.score});
 						});
-					}
-					var time = formatDate(new Date());
-					rooms[index].sentiment_queue.push({aggregate: action.result.aggregate.score, time: time});
-					rooms[index].sentiment_queue.splice(-180);
+						action.result.negative.forEach(function(el){
+							rooms[index].data.negative++;
+							sentiments.push({sentiment: el.sentiment, score: el.score});
+						});
+						if(action.result.positive.length == 0 && action.result.negative ==0)
+						{
+							rooms[index].data.neutral++;
+							influentialSentiment = {sentiment: "", sentiment_score: 0};
+						}
+						else if (sentiments.length > 0)
+						{
+							influentialSentiment = sentiments.reduce(function(a, b){
+								if(Math.abs(a.score) > Math.abs(b.score))
+									return a;
+								else
+									return b;
+							});
+						}
+						var time = formatDate(new Date());
+						rooms[index].sentiment_queue.push({aggregate: action.result.aggregate.score, time: time});
+						rooms[index].sentiment_queue.splice(-180);
 
-					io.to(rooms[index].room).emit('analysis', {aggregate: action.result.aggregate.score, sentiment: influentialSentiment.sentiment, sentiment_score: influentialSentiment.score, room_data: rooms[index].data});
-					console.log(rooms[index].room + " : " + action.result.aggregate.score)
+						io.to(rooms[index].room).emit('analysis', {aggregate: action.result.aggregate.score, sentiment: influentialSentiment.sentiment, sentiment_score: influentialSentiment.score, room_data: rooms[index].data});
+						console.log(rooms[index].room + " : " + action.result.aggregate.score)
+					}
 				});
+			
 			}
 		});
 	}
@@ -211,11 +215,13 @@ function runSentiment(data, callback){
 	        	if (r.statusCode >= 200 && r.statusCode < 400)
 	        	{
 	        		callback(JSON.parse(b));
+	        		//console.log(b);
 	        	}
 	        	 else {
 	        	 	console.log("error: ");
 	        	 	console.log(r);
 	        	}
+	        	waitingForRespose = false;
 	        });
 	    }
 	});

@@ -3,6 +3,7 @@ var io = require('socket.io-client')
 var socket = io('http://localhost:3000');
 var TweetStream = require('./TweetStream');
 var StoryList = require('./StoryList');
+var GraphRealtime = require('./GraphRealtime');
 var $ = require('jquery');
 
 var Search = React.createClass({
@@ -47,7 +48,7 @@ var Search = React.createClass({
       self.setState(function(previousState, currentProps) {
         var updatedState = previousState.tweets.map(function(t){
           var time = pretty(t.created_at);
-          return {text: t.text, created_at: tweet.created_at, time: time}
+          return {text: t.text, created_at: t.created_at, time: time}
         });
         return {tweets: updatedState};
       });
@@ -58,20 +59,27 @@ var Search = React.createClass({
     socket.on('analysis', function(data){
       console.log("sentiment: ");
       console.log(data);
+      self.setState({aggregate: data.aggregate})
     })
   },
   getInitialState: function() {
-    return {key: [], tweets: [], stories: []};
+    return {key: [], tweets: [], stories: [], aggregate: 0};
   },
   //        <div>Search: {this.props.params.key}</div>
 
   render: function() {
     return (
 
-      <div className="layout-collumn layout">
-        <TweetStream tweets={this.state.tweets}/>
-        <StoryList stories={this.state.stories}/>
+      <div className="layout">
+        <div className="layout-collumn">
+          <TweetStream tweets={this.state.tweets}/>
+          <StoryList stories={this.state.stories}/>
+        </div>
+        <div className="layout-row">
+          <GraphRealtime aggregate={this.state.aggregate}/>
+        </div>
       </div>
+
     );
   }
 });
