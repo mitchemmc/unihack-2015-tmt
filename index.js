@@ -6,6 +6,7 @@ var request = require('request');
 var Twitter = require('node-tweet-stream');
 
 var rooms = [];
+var waitingForRespose = false;
 
 app.get(/^((?!js).)*$/, function(req, res){
   res.sendfile('index.html');
@@ -46,7 +47,6 @@ var t = new Twitter({
   });
  
 t.on('tweet', function (tweet) {
-	//console.log("tweet");
 	rooms.forEach(function(d){
 		var reg = new RegExp(d.room, "gi");
 		if(reg.test(tweet.text))
@@ -138,6 +138,7 @@ setInterval(function(){
 		runSentiment(sentiment_data, function(data){
 			if(data)
 			{
+				waitingForRespose = false;
 				data.actions.forEach(function(action, index){
 					io.to(rooms[index].room).emit('analysis', action.result.aggregate.score);
 					console.log(rooms[index].room + " : " + action.result.aggregate.score)
@@ -148,9 +149,8 @@ setInterval(function(){
 }, 10000);
 
 function runSentiment(data, callback){
-	//[{"name": "analyzesentiment","params": { "text": "I like cats"},  "version": "v1"}]
+	waitingForRespose = true;
 	var job = JSON.stringify({"actions": data});
-	//console.log(job);
 	var apikey = '8f57ab14-d809-45bb-b4ee-48bf9e8fe676';
 	request({
 	    url: 'http://api.idolondemand.com/1/job/', //URL to hit
@@ -163,7 +163,6 @@ function runSentiment(data, callback){
 	    if(error) {
 	        console.log(error);
 	    } else {
-	        //console.log(response.statusCode, body);
 	        var jobID = JSON.parse(body).jobID;
 	        request({
 	        	url: 'http://api.idolondemand.com/1/job/status/' + jobID + "?apikey=" + apikey
@@ -180,7 +179,7 @@ function runSentiment(data, callback){
 var urlReg = new RegExp("(https?|ftp):\/\/[^\s\/$.?#].[^\s]*|[@#]", 'gi');
 
 function updateSentimentText(room, tweet){
-	if(typeof tweet.retweeted_status == 'undefined' && tweet.lang == "en")
+	if(typeof tweet.retweeted_status == 'undefined' && tweet.lang == "en" && !waitingForRespose)
 	{
 		var parsed = tweet.text.replace(urlReg, "");
 		room.sentiment_string += parsed + " ";
