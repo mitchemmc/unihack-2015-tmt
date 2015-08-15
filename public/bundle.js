@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "b50cb9d150aa75f3765a"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "0a08de8a954e9816a410"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -24471,6 +24471,10 @@
 	        return {tweets: previousState.tweets.concat([tweet])};
 	      });
 	    });
+
+	    socket.on('analysis', function(score){
+	      console.log(score);
+	    })
 	  },
 	  getInitialState: function() {
 	    return {key: [], tweets: []};

@@ -19,6 +19,10 @@ var Search = React.createClass({
         return {tweets: previousState.tweets.concat([tweet])};
       });
     });
+
+    socket.on('analysis', function(score){
+      console.log(score);
+    })
   },
   getInitialState: function() {
     return {key: [], tweets: []};

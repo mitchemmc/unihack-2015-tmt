@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var request = require('request');
 var Twitter = require('node-tweet-stream');
 
 var rooms = [];
@@ -45,12 +46,14 @@ var t = new Twitter({
   });
  
 t.on('tweet', function (tweet) {
+	//console.log("tweet");
 	rooms.forEach(function(d){
-		var reg = new RegExp(d.room);
+		var reg = new RegExp(d.room, "gi");
 		if(reg.test(tweet.text))
 		{
 			io.to(d.room).emit('tweet', tweet);
 			console.log("sending tweet to: " + d.room);
+			updateSentimentText(d, tweet);
 		}
 	});
 });
@@ -114,4 +117,72 @@ function incrementSubscribers(room){
 		if(d.room == room)
 			d.subscribers++;
 	});
+}
+
+setInterval(function(){
+	if(rooms.length > 0)
+	{
+
+		var sentiment_data = rooms.map(function(room){
+			var text = "-";
+			if(room.sentiment_string != "")
+				text = room.sentiment_string;
+
+			return {name: "analyzesentiment", params: {text: text}, version: "v1"};
+		});
+		console.log(sentiment_data);
+		rooms.forEach(function(room){
+			room.sentiment_string = "";
+		});
+
+		runSentiment(sentiment_data, function(data){
+			if(data)
+			{
+				data.actions.forEach(function(action, index){
+					io.to(rooms[index].room).emit('analysis', action.result.aggregate.score);
+					console.log(rooms[index].room + " : " + action.result.aggregate.score)
+				});
+			}
+		});
+	}
+}, 10000);
+
+function runSentiment(data, callback){
+	//[{"name": "analyzesentiment","params": { "text": "I like cats"},  "version": "v1"}]
+	var job = JSON.stringify({"actions": data});
+	//console.log(job);
+	var apikey = '8f57ab14-d809-45bb-b4ee-48bf9e8fe676';
+	request({
+	    url: 'http://api.idolondemand.com/1/job/', //URL to hit
+	    method: 'POST',
+	    form: {
+	        'apikey': apikey,
+	        'job': job
+	    },
+	}, function(error, response, body){
+	    if(error) {
+	        console.log(error);
+	    } else {
+	        //console.log(response.statusCode, body);
+	        var jobID = JSON.parse(body).jobID;
+	        request({
+	        	url: 'http://api.idolondemand.com/1/job/status/' + jobID + "?apikey=" + apikey
+
+	        }, function(e, r, b){
+	        	console.log(b);
+	        	if(!e)
+	        		callback(JSON.parse(b));
+	        });
+	    }
+	});
+};
+
+var urlReg = new RegExp("(https?|ftp):\/\/[^\s\/$.?#].[^\s]*|[@#]", 'gi');
+
+function updateSentimentText(room, tweet){
+	if(typeof tweet.retweeted_status == 'undefined' && tweet.lang == "en")
+	{
+		var parsed = tweet.text.replace(urlReg, "");
+		room.sentiment_string += parsed + " ";
+	}
 }
