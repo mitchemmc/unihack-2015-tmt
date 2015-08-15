@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "4345ccb6d27acc9b27fe"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "072e39652d78b5a6497d"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -24479,6 +24479,7 @@
 	var GraphRealtime = __webpack_require__(260);
 	var GraphHistoric = __webpack_require__(261);
 	var Button = __webpack_require__(269);
+	var PieChart = __webpack_require__(270);
 	var $ = __webpack_require__(262);
 
 	var Search = React.createClass({displayName: "Search",
@@ -24540,11 +24541,11 @@
 	        sentiment_queue_times.push(element.time);
 	        sentiment_queue_scores.push(element.aggregate);
 	      });
-	      self.setState({aggregate: data.aggregate, sentiment_queue_times: sentiment_queue_times, sentiment_queue_scores: sentiment_queue_scores})
+	      self.setState({aggregate: data.aggregate, sentiment_queue_times: sentiment_queue_times, sentiment_queue_scores: sentiment_queue_scores, room_data: data.room_data})
 	    })
 	  },
 	  getInitialState: function() {
-	    return {key: [], tweets: [], stories: [], aggregate: 0, sentiment_queue_times: [], sentiment_queue_scores: [], graph_switch_state: "Historic"};
+	    return {key: [], tweets: [], stories: [], aggregate: 0, sentiment_queue_times: [], sentiment_queue_scores: [], graph_switch_state: "Realtime", room_data: {positive: 0, negative: 0, neutral: 0}};
 	  },
 	  //        <div>Search: {this.props.params.key}</div>
 	//          <GraphRealtime aggregate={this.state.aggregate}/>
@@ -24575,6 +24576,9 @@
 	          React.createElement(Button, {class: "graph-real-hist", click: this._handleGraphSwitchClick, text: this.state.graph_switch_state}), 
 	          React.createElement(GraphHistoric, {times: this.state.sentiment_queue_times, values: this.state.sentiment_queue_scores, ref: "graphHistoric"}), 
 	          React.createElement(GraphRealtime, {aggregate: this.state.aggregate, ref: "grpahRealtime"})
+	        ), 
+	        React.createElement("div", {className: "layout-collumn"}, 
+	          React.createElement(PieChart, {positive: this.state.room_data.positive, negative: this.state.room_data.negative, neutral: this.state.room_data.neutral})
 	        )
 	      )
 
@@ -57946,6 +57950,65 @@
 	});
 
 	module.exports = Button;
+
+/***/ },
+/* 270 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var c3 = __webpack_require__(263);
+	__webpack_require__(267);
+	var oldProps = -1;
+
+	var c3data = { bindto: '#pie-chart',
+					data: {
+				        columns: [
+				            ['positive', 0],
+				            ['negative', 0],
+				            ['neutral', 0]
+				        ],
+				        type: 'pie',
+				        // Set the colors of the pie chart
+				        colors: {positive: "green", negative: "red", neutral: "grey"}
+				    }
+
+				    
+				};
+
+	var PieChart = React.createClass({displayName: "PieChart",
+		_renderChart: function () {
+	        // save reference to our chart to the instance
+	        this.chart = c3.generate(c3data);
+	    },
+	    componentDidMount: function () {
+	        this._renderChart();
+	        //this._renderChart({'5:2:42': 0.06722221709787846, '5:2:43': -0.8602521014399827});
+	    },
+
+	    componentWillReceiveProps: function (newProps) {
+	    	var sum = newProps.positive + newProps.negative + newProps.neutral;
+	    	if(sum > oldProps)
+	    	{
+		    	console.log(sum);
+		        this.chart.load({columns: [
+							['positive', newProps.positive],
+					        ['negative', newProps.negative],
+					        ['neutral', newProps.neutral]
+						]});
+		        oldProps = sum;
+		    }	
+	    },
+	    
+		render: function(){
+			//['x'].concat(this.props.times)
+			//['data1'].concat(datathis.props.values)
+			return React.createElement("div", {id: "pie-chart"})
+		}
+
+	});
+
+	module.exports = PieChart;
+
 
 /***/ }
 /******/ ]);

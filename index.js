@@ -153,6 +153,15 @@ setInterval(function(){
 							rooms[index].data.negative++;
 							sentiments.push({sentiment: el.sentiment, score: el.score});
 						});
+
+						if(rooms[index].data.positive > 100 || rooms[index].data.negative > 100 || rooms[index].data.neutral > 100 )
+						{
+							rooms[index].data.positive = Math.floor( rooms[index].data.positive/ 2);
+							rooms[index].data.negative = Math.floor( rooms[index].data.negative/ 2);
+							rooms[index].data.neutral = Math.floor( rooms[index].data.neutral/ 2);
+
+						}
+
 						if(action.result.positive.length == 0 && action.result.negative ==0)
 						{
 							rooms[index].data.neutral++;
@@ -169,7 +178,7 @@ setInterval(function(){
 						}
 						var time = formatDate(new Date());
 						rooms[index].sentiment_queue.push({aggregate: action.result.aggregate.score, time: time});
-						//rooms[index].sentiment_queue.splice(-180);
+						rooms[index].sentiment_queue = rooms[index].sentiment_queue.slice(-180);
 
 						io.to(rooms[index].room).emit('analysis', {aggregate: action.result.aggregate.score, sentiment: influentialSentiment.sentiment, sentiment_score: influentialSentiment.score, room_data: rooms[index].data, sentiment_queue: rooms[index].sentiment_queue});
 						console.log(rooms[index].room + " : " + action.result.aggregate.score)
