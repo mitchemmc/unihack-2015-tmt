@@ -23,6 +23,8 @@ io.on('connection', function(socket){
   });
 
   socket.on('disconnect', function(){
+  	console.log('disconnect');
+  	console.log(socket.subscriptions);
   	socket.subscriptions.forEach(function(room){
   		unsubscribe(room);
   		socket.leave(room);
@@ -82,11 +84,12 @@ function subscribe(room){
 }
 
 function unsubscribe(room){
+	console.log("unsubscribing from: " + room);
 	rooms.forEach(function(d){
 		if(d.room == room)
 		{
-			d.room.subscribers--;
-			if(d.room.subscribers < 1)
+			d.subscribers--;
+			if(d.subscribers < 1)
 			{
 				destroyRoom(d);
 			}

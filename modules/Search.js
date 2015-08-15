@@ -8,19 +8,20 @@ var Search = React.createClass({
     console.log("subscribing to: " + to);
   },
   componentDidMount: function () {
+    var self = this;
     var key = this.props.params.key;
     console.log("mount");
     this.subscribe(key);
     this.setState({key: [this.props.params.key]});
     socket.on('tweet', function(tweet){
       console.log(tweet);
-      setState(function(previousState, currentProps) {
+      self.setState(function(previousState, currentProps) {
         return {tweets: previousState.tweets.concat([tweet])};
       });
     });
   },
   getInitialState: function() {
-    return {key: []};
+    return {key: [], tweets: []};
   },
   render: function() {
     return (

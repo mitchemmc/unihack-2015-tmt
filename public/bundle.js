@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "88296817e1d9762e8bc1"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "b50cb9d150aa75f3765a"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -24460,19 +24460,20 @@
 	    console.log("subscribing to: " + to);
 	  },
 	  componentDidMount: function () {
+	    var self = this;
 	    var key = this.props.params.key;
 	    console.log("mount");
 	    this.subscribe(key);
 	    this.setState({key: [this.props.params.key]});
 	    socket.on('tweet', function(tweet){
 	      console.log(tweet);
-	      setState(function(previousState, currentProps) {
+	      self.setState(function(previousState, currentProps) {
 	        return {tweets: previousState.tweets.concat([tweet])};
 	      });
 	    });
 	  },
 	  getInitialState: function() {
-	    return {key: []};
+	    return {key: [], tweets: []};
 	  },
 	  render: function() {
 	    return (
