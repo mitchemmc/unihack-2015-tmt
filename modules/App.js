@@ -14,6 +14,7 @@ var App = React.createClass({
   search: function(e){
     e.preventDefault();
     var query = React.findDOMNode(this.refs.input).value;
+    query = query.replace('#', '');
     console.log(query);
     //window.location.replace = '/search=';
     console.log(this);

@@ -7,6 +7,7 @@ var GraphRealtime = require('./GraphRealtime');
 var GraphHistoric = require('./GraphHistoric');
 var Button = require('./Button');
 var PieChart = require('./PieChart');
+var SentimentList = require('./SentimentList');
 var $ = require('jquery');
 
 var Search = React.createClass({
@@ -68,11 +69,20 @@ var Search = React.createClass({
         sentiment_queue_times.push(element.time);
         sentiment_queue_scores.push(element.aggregate);
       });
-      self.setState({aggregate: data.aggregate, sentiment_queue_times: sentiment_queue_times, sentiment_queue_scores: sentiment_queue_scores, room_data: data.room_data})
+      var sentiments = [];
+      if(data.sentiment != "" && typeof data.sentiment_score !== 'undefined')
+      {
+        sentiments = [{sentiment: data.sentiment, sentiment_score: data.sentiment_score}].concat(self.state.sentiments);
+      }
+      else
+      {
+        sentiments = self.state.sentiments;
+      }
+      self.setState({aggregate: data.aggregate, sentiments: sentiments, sentiment_queue_times: sentiment_queue_times, sentiment_queue_scores: sentiment_queue_scores, room_data: data.room_data, })
     })
   },
   getInitialState: function() {
-    return {key: [], tweets: [], stories: [], aggregate: 0, sentiment_queue_times: [], sentiment_queue_scores: [], graph_switch_state: "Realtime", room_data: {positive: 0, negative: 0, neutral: 0}};
+    return {key: [], tweets: [], stories: [], aggregate: 0, sentiments: [], sentiment_queue_times: [], sentiment_queue_scores: [], graph_switch_state: "Realtime", room_data: {positive: 0, negative: 0, neutral: 0}};
   },
   //        <div>Search: {this.props.params.key}</div>
 //          <GraphRealtime aggregate={this.state.aggregate}/>
@@ -92,20 +102,45 @@ var Search = React.createClass({
   },
 
   render: function() {
-    return (
+          var graphState = ""
+      if(this.state.graph_switch_state == "Historic")
+        {
+          graphState = "Realtime"
+        }
+        else
+        {
+          graphState = "Historic"
+        }
 
-      <div className="layout">
+    return (
+      <div className="app">
         <div className="layout-collumn layout">
-          <TweetStream tweets={this.state.tweets}/>
-          <StoryList stories={this.state.stories}/>
+          <div className="tweet-stream-container">
+            <div className="tweet-stream-header">stream</div>
+            <TweetStream tweets={this.state.tweets}/>
+          </div>
+          <div className="stories-container">
+            <div className="stories-container-header">stories</div>
+            <StoryList stories={this.state.stories}/>
+          </div>
         </div>
-        <div className="layout-row">
-          <Button class="graph-real-hist" click={this._handleGraphSwitchClick} text={this.state.graph_switch_state} />
-          <GraphHistoric times={this.state.sentiment_queue_times} values={this.state.sentiment_queue_scores} ref="graphHistoric"/>
-          <GraphRealtime aggregate={this.state.aggregate} ref="grpahRealtime"/>
+        <div className="row-container">
+          <div className="stories-container-header collumn-header">{graphState}</div>
+          <div className="layout-row">
+              <Button class="graph-real-hist" click={this._handleGraphSwitchClick} text={this.state.graph_switch_state} />
+              <GraphHistoric times={this.state.sentiment_queue_times} values={this.state.sentiment_queue_scores} ref="graphHistoric"/>
+              <GraphRealtime aggregate={this.state.aggregate} ref="grpahRealtime"/>
+          </div>
         </div>
         <div className="layout-collumn">
-          <PieChart positive={this.state.room_data.positive} negative={this.state.room_data.negative} neutral={this.state.room_data.neutral} />
+          <div className="pie-chart-container collumn-container">
+            <div className="pie-chart-header collumn-header">total</div>
+            <PieChart positive={this.state.room_data.positive} negative={this.state.room_data.negative} neutral={this.state.room_data.neutral} />
+          </div>
+          <div className="sentiment-list-container collumn-container">
+            <div className="sentiment-list-header collumn-header">keywords</div>
+            <SentimentList sentiments={this.state.sentiments} />
+          </div>
         </div>
       </div>
 

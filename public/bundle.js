@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "632c7a1d21ef1b5dc5db"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "8987ccb0c9b54e4da88b"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -566,7 +566,7 @@
 	  )
 	);
 
-	Router.run(routes, Router.HistoryLocation, function(Handler) {
+	Router.run(routes, Router.RefreshLocation, function(Handler) {
 	  React.render(React.createElement(Handler, null), document.body);
 	});
 
@@ -590,6 +590,7 @@
 	  search: function(e){
 	    e.preventDefault();
 	    var query = React.findDOMNode(this.refs.input).value;
+	    query = query.replace('#', '');
 	    console.log(query);
 	    //window.location.replace = '/search=';
 	    console.log(this);
@@ -24480,6 +24481,7 @@
 	var GraphHistoric = __webpack_require__(261);
 	var Button = __webpack_require__(266);
 	var PieChart = __webpack_require__(267);
+	var SentimentList = __webpack_require__(269);
 	var $ = __webpack_require__(268);
 
 	var Search = React.createClass({displayName: "Search",
@@ -24541,11 +24543,20 @@
 	        sentiment_queue_times.push(element.time);
 	        sentiment_queue_scores.push(element.aggregate);
 	      });
-	      self.setState({aggregate: data.aggregate, sentiment_queue_times: sentiment_queue_times, sentiment_queue_scores: sentiment_queue_scores, room_data: data.room_data})
+	      var sentiments = [];
+	      if(data.sentiment != "" && typeof data.sentiment_score !== 'undefined')
+	      {
+	        sentiments = [{sentiment: data.sentiment, sentiment_score: data.sentiment_score}].concat(self.state.sentiments);
+	      }
+	      else
+	      {
+	        sentiments = self.state.sentiments;
+	      }
+	      self.setState({aggregate: data.aggregate, sentiments: sentiments, sentiment_queue_times: sentiment_queue_times, sentiment_queue_scores: sentiment_queue_scores, room_data: data.room_data, })
 	    })
 	  },
 	  getInitialState: function() {
-	    return {key: [], tweets: [], stories: [], aggregate: 0, sentiment_queue_times: [], sentiment_queue_scores: [], graph_switch_state: "Realtime", room_data: {positive: 0, negative: 0, neutral: 0}};
+	    return {key: [], tweets: [], stories: [], aggregate: 0, sentiments: [], sentiment_queue_times: [], sentiment_queue_scores: [], graph_switch_state: "Realtime", room_data: {positive: 0, negative: 0, neutral: 0}};
 	  },
 	  //        <div>Search: {this.props.params.key}</div>
 	//          <GraphRealtime aggregate={this.state.aggregate}/>
@@ -24565,20 +24576,45 @@
 	  },
 
 	  render: function() {
-	    return (
+	          var graphState = ""
+	      if(this.state.graph_switch_state == "Historic")
+	        {
+	          graphState = "Realtime"
+	        }
+	        else
+	        {
+	          graphState = "Historic"
+	        }
 
-	      React.createElement("div", {className: "layout"}, 
+	    return (
+	      React.createElement("div", {className: "app"}, 
 	        React.createElement("div", {className: "layout-collumn layout"}, 
-	          React.createElement(TweetStream, {tweets: this.state.tweets}), 
-	          React.createElement(StoryList, {stories: this.state.stories})
+	          React.createElement("div", {className: "tweet-stream-container"}, 
+	            React.createElement("div", {className: "tweet-stream-header"}, "stream"), 
+	            React.createElement(TweetStream, {tweets: this.state.tweets})
+	          ), 
+	          React.createElement("div", {className: "stories-container"}, 
+	            React.createElement("div", {className: "stories-container-header"}, "stories"), 
+	            React.createElement(StoryList, {stories: this.state.stories})
+	          )
 	        ), 
-	        React.createElement("div", {className: "layout-row"}, 
-	          React.createElement(Button, {class: "graph-real-hist", click: this._handleGraphSwitchClick, text: this.state.graph_switch_state}), 
-	          React.createElement(GraphHistoric, {times: this.state.sentiment_queue_times, values: this.state.sentiment_queue_scores, ref: "graphHistoric"}), 
-	          React.createElement(GraphRealtime, {aggregate: this.state.aggregate, ref: "grpahRealtime"})
+	        React.createElement("div", {className: "row-container"}, 
+	          React.createElement("div", {className: "stories-container-header collumn-header"}, graphState), 
+	          React.createElement("div", {className: "layout-row"}, 
+	              React.createElement(Button, {class: "graph-real-hist", click: this._handleGraphSwitchClick, text: this.state.graph_switch_state}), 
+	              React.createElement(GraphHistoric, {times: this.state.sentiment_queue_times, values: this.state.sentiment_queue_scores, ref: "graphHistoric"}), 
+	              React.createElement(GraphRealtime, {aggregate: this.state.aggregate, ref: "grpahRealtime"})
+	          )
 	        ), 
 	        React.createElement("div", {className: "layout-collumn"}, 
-	          React.createElement(PieChart, {positive: this.state.room_data.positive, negative: this.state.room_data.negative, neutral: this.state.room_data.neutral})
+	          React.createElement("div", {className: "pie-chart-container collumn-container"}, 
+	            React.createElement("div", {className: "pie-chart-header collumn-header"}, "total"), 
+	            React.createElement(PieChart, {positive: this.state.room_data.positive, negative: this.state.room_data.negative, neutral: this.state.room_data.neutral})
+	          ), 
+	          React.createElement("div", {className: "sentiment-list-container collumn-container"}, 
+	            React.createElement("div", {className: "sentiment-list-header collumn-header"}, "keywords"), 
+	            React.createElement(SentimentList, {sentiments: this.state.sentiments})
+	          )
 	        )
 	      )
 
@@ -32030,7 +32066,7 @@
 			//calculateData(this.props.sentiment_value);
 			var w = window.innerWidth;
 			return(
-				React.createElement("div", {id: "graph-realtime-container", className: "hidden", style: {height: "320px", overflow: "hidden"}}, 
+				React.createElement("div", {id: "graph-realtime-container", className: "hidden", style: {height: "320px"}}, 
 					React.createElement("canvas", {id: "graph-realtime", height: "320", width: w, ref: "graph"}
 					)
 				)
@@ -32115,7 +32151,8 @@
 	            			data1: 'Name 1'
 	        			},
 				        colors: {
-	            			Historical: '#ff0000'
+	            			Historical: 'black',
+	            			data1: 'rgba(0,0,0,.6)'
 	            		},
 
 				    },
@@ -32147,43 +32184,7 @@
 				    }
 				}
 
-				/*
-				var test_data = new Object();
-
-				setInterval(function () {
-					var timer = new Date();
-					var sentiment = Math.random()*2 - 1;
-					test_data[formatDate(timer)] = sentiment;
-					console.log(test_data);
-					loadHistoric(test_data);
-				}, 1000);*/
-
-				// Call loadHistoric on {"H:M:S": sentiment, "H:M:S": sentiment}
-				// This will add to graph
-
-				/*function formatDate(date_object) {
-					return date_object.getHours() + ":" + date_object.getMinutes() + ":" + date_object.getSeconds();
-				}*/
 				
-				/*function parseColumns(data) {
-					var x_col = ['x'];
-					var data_col = ['data1'];
-					for (var time in data) {
-						x_col.push(time);
-						data_col.push(data[time]);
-					}
-					return {"x_col": x_col, "data_col": data_col};
-				}*/
-
-				/*function loadHistoric(history_data) {
-					var parsedCols = parseColumns(history_data);
-				    chart.load({
-				        columns: [
-				            parsedCols.x_col,
-				            parsedCols.data_col,
-				        ]
-				    });
-				}*/
 
 	module.exports = GraphHistoric;
 
@@ -48751,7 +48752,7 @@
 				        ],
 				        type: 'pie',
 				        // Set the colors of the pie chart
-				        colors: {positive: "green", negative: "red", neutral: "grey"}
+				        colors: {positive: "#c4e0a4", negative: "#e47272", neutral: "#ced7db"}
 				    }
 
 				    
@@ -48759,11 +48760,11 @@
 
 	var PieChart = React.createClass({displayName: "PieChart",
 		_renderChart: function () {
-	        // save reference to our chart to the instance
-	        this.chart = c3.generate(c3data);
 	    },
 	    componentDidMount: function () {
-	        this._renderChart();
+	        //this._renderChart();
+	        this.chart = c3.generate(c3data);
+
 	        //this._renderChart({'5:2:42': 0.06722221709787846, '5:2:43': -0.8602521014399827});
 	    },
 
@@ -48782,8 +48783,6 @@
 	    },
 	    
 		render: function(){
-			//['x'].concat(this.props.times)
-			//['data1'].concat(datathis.props.values)
 			return React.createElement("div", {id: "pie-chart"})
 		}
 
@@ -58007,6 +58006,49 @@
 
 	}));
 
+
+/***/ },
+/* 269 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var SentimentListItem = __webpack_require__(270);
+
+	var SentimentList = React.createClass({displayName: "SentimentList",
+	  render: function() {
+	  	var sentiments = this.props.sentiments.map(function(el, i){
+	  		return (
+	  			React.createElement(SentimentListItem, {sentiment: el.sentiment, score: el.sentiment_score, key: i})
+	  			);
+	  	});
+	    return (
+	      React.createElement("ul", {className: "sentiment-list"}, 
+	      	sentiments
+	      )
+	    );
+	  }
+	});
+
+	module.exports = SentimentList;
+
+/***/ },
+/* 270 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+
+	var SentimentListItem = React.createClass({displayName: "SentimentListItem",
+	  render: function() {
+	  	var color = this.props.score > 0 ? '#c4e0a4' : '#e47272';
+	    return (
+	      React.createElement("li", {className: "sentiment-list-item", style: {background: color}}, 
+	      	React.createElement("h3", null, this.props.sentiment, "-"), React.createElement("span", null, " ", this.props.score.toFixed(2))
+	      )
+	    );
+	  }
+	});
+
+	module.exports = SentimentListItem;
 
 /***/ }
 /******/ ]);

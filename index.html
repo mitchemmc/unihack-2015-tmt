@@ -4,7 +4,11 @@
   		body {
   			margin: 0;
   		}
+  		.app {
+  			margin-top: 70px;
+  		}
   		header {
+  			z-index: 100;
   			width: 100%;
   			height: 50px;
   			position: fixed;
@@ -32,18 +36,45 @@
 		    transform: translateY(-7px);
   		}
 		.tweet-stream {
+			margin-top: 0;
 		    padding: 0;
 		    margin-right: 5px;
 		    border-radius: 2px;
 		    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 		    list-style: none;
-		    width: 50%;
+		    width: calc(100% - 5px);
 		    height: 400px;
 		    overflow-y: auto;
 		    font-family: sans-serif;
 		    font-size: 12px;
 		}
-
+		.tweet-stream-header{
+		    width: 100%;
+		    height: 25px;
+		    padding: 0px;
+		    padding-left: 10px;
+		    display: block;
+		    font-weight: 100;
+		    color: rgba(0,0,0,.37);
+		    font-family: sans-serif;
+		}
+		.tweet-stream-container{
+			width: 50%;
+		}
+		.collumn-container {
+			width: 50%;
+		}
+		.collumn-header {
+			width: 100%;
+		    height: 25px;
+		    margin-top: 10px; 
+		    padding: 0px;
+		    padding-left: 10px;
+		    display: block;
+		    font-weight: 100;
+		    color: rgba(0,0,0,.37);
+		    font-family: sans-serif;
+		}
 		li.tweet {
 			padding: 10px;
 		    height: 40px;
@@ -73,16 +104,30 @@
 		}
 
 		ul.story-list {
+			margin-top: 0;
 		    padding: 0;
 		    margin-left: 5px;
 		    border-radius: 2px;
 		    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 		    list-style: none;
-		    width: 50%;
+		    width: calc(100% - 5px);
 		    height: 400px;
 		    overflow-y: auto;
 		    font-family: sans-serif;
 		    font-size: 12px;
+		}
+		.stories-container-header{
+		    width: 100%;
+		    height: 25px;
+		    padding: 0px;
+		    padding-left: 10px;
+		    display: block;
+		    font-weight: 100;
+		    color: rgba(0,0,0,.37);
+		    font-family: sans-serif;
+		}
+		.stories-container{
+			width: 50%;
 		}
 		li.story {
 		    margin-bottom: 10px;
@@ -132,14 +177,18 @@
 		}
 
 		.layout-row {
-			width: 65%;
+			width: 100%;
 			margin-right: auto;
 			margin-left: auto;
 			box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 			overflow: hidden;
 
 		}
-
+		.row-container {
+		    width: 65%;
+		    margin-left: auto;
+		    margin-right: auto;
+		}
 		.hidden{
 			visibility: hidden;
 			position: absolute !important;
@@ -177,34 +226,45 @@
 		}
 		form.enterForm {
 		}
+
+		.graph-real-hist {
+			outline: none;
+		    float: right;
+		    margin: 10px;
+		    position: relative;
+		    z-index: 10;
+		    border: none;
+		    cursor: pointer;
+		    color: rgba(0,0,0,.87);
+		    background-color: rgb(234, 234, 234);		}
 		.home {
 		    flex: 2 2px;
 		    padding-left: 10px;
 		}
 
 		.c3-ygrid-line.grid_neutral line {
-		    stroke: light grey;
+		    stroke: #ced7db;
 		    stroke-dasharray: 5,5;
 		    z-index: -1;
 		}
 
 		.c3-ygrid-line.grid_neutral text {
-		    fill: light grey;
+		    fill: #ced7db;
 		}
 
 		.c3-ygrid-line.grid_positive text {
-		    fill: green;
+		    fill: #c4e0a4;
 		}
 		.c3-ygrid-line.grid_negative text {
-		    fill: red;
+		    fill: #e47272;
 		}
 
 		.c3-ygrid-line.grid_positive line {
-		    stroke: green;
+		    stroke: #c4e0a4;
 		}
 
 		.c3-ygrid-line.grid_negative line {
-		    stroke: red;
+		    stroke: #e47272;
 		}
 		#graph-realtime{
 			height: 320px;
@@ -212,6 +272,44 @@
 		canvas{
 			display: block;
 		}
+		.sentiment-list {
+	        padding: 0;
+	        margin: 0;
+		    margin-left: 5px;
+		    border-radius: 2px;
+		    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+		    list-style: none;
+		    width: calc(100% - 5px);
+		    height: 320px;
+		    overflow-y: auto;
+		    font-family: sans-serif;
+		    font-size: 12px;
+		}
+		.sentiment-list-item {
+		    padding: 0;
+		    padding-left: 10px;
+		    border-bottom: 1px solid rgba(0,0,0,.1);
+		}
+		.sentiment-list-item h3{
+			font-weight: 200;
+		    padding: 0;
+		    display: inline-block;
+		    color: white;
+		    line-height: 0px;
+		}
+		.sentiment-list-item span{
+			font-weight: 200;
+		    padding: 0;
+		    display: inline-block;
+		    color: white;
+		    line-height: 0px;
+		}
+		div#pie-chart {
+		    width: calc(100% - 5px);
+		    margin-right: 5px;
+		    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+		}
+
   	</style>
   </head>
   <body></body>

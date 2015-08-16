@@ -39,7 +39,8 @@ var c3data = {
             			data1: 'Name 1'
         			},
 			        colors: {
-            			Historical: '#ff0000'
+            			Historical: 'black',
+            			data1: 'rgba(0,0,0,.6)'
             		},
 
 			    },
@@ -71,42 +72,6 @@ var c3data = {
 			    }
 			}
 
-			/*
-			var test_data = new Object();
-
-			setInterval(function () {
-				var timer = new Date();
-				var sentiment = Math.random()*2 - 1;
-				test_data[formatDate(timer)] = sentiment;
-				console.log(test_data);
-				loadHistoric(test_data);
-			}, 1000);*/
-
-			// Call loadHistoric on {"H:M:S": sentiment, "H:M:S": sentiment}
-			// This will add to graph
-
-			/*function formatDate(date_object) {
-				return date_object.getHours() + ":" + date_object.getMinutes() + ":" + date_object.getSeconds();
-			}*/
 			
-			/*function parseColumns(data) {
-				var x_col = ['x'];
-				var data_col = ['data1'];
-				for (var time in data) {
-					x_col.push(time);
-					data_col.push(data[time]);
-				}
-				return {"x_col": x_col, "data_col": data_col};
-			}*/
-
-			/*function loadHistoric(history_data) {
-				var parsedCols = parseColumns(history_data);
-			    chart.load({
-			        columns: [
-			            parsedCols.x_col,
-			            parsedCols.data_col,
-			        ]
-			    });
-			}*/
 
 module.exports = GraphHistoric;

@@ -12,7 +12,7 @@ var c3data = { bindto: '#pie-chart',
 			        ],
 			        type: 'pie',
 			        // Set the colors of the pie chart
-			        colors: {positive: "green", negative: "red", neutral: "grey"}
+			        colors: {positive: "#c4e0a4", negative: "#e47272", neutral: "#ced7db"}
 			    }
 
 			    
@@ -20,11 +20,11 @@ var c3data = { bindto: '#pie-chart',
 
 var PieChart = React.createClass({
 	_renderChart: function () {
-        // save reference to our chart to the instance
-        this.chart = c3.generate(c3data);
     },
     componentDidMount: function () {
-        this._renderChart();
+        //this._renderChart();
+        this.chart = c3.generate(c3data);
+
         //this._renderChart({'5:2:42': 0.06722221709787846, '5:2:43': -0.8602521014399827});
     },
 
@@ -43,8 +43,6 @@ var PieChart = React.createClass({
     },
     
 	render: function(){
-		//['x'].concat(this.props.times)
-		//['data1'].concat(datathis.props.values)
 		return <div id="pie-chart"/>
 	}
 
